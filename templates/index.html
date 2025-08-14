@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Attendance Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; }
+        .dashboard-header { text-align: center; margin-bottom: 30px; }
+        .attendance-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+        .student-card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            padding: 20px;
+            width: 250px;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        .student-card:hover {
+            transform: translateY(-5px);
+        }
+        .student-card img {
+            width: 100%;
+            height: auto;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        .student-card h3 {
+            margin: 0;
+            color: #333;
+        }
+        .student-card p {
+            margin: 5px 0 0;
+            color: #666;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-header">
+        <h1>Live Attendance Dashboard</h1>
+    </div>
+    <div id="attendance-grid" class="attendance-grid">
+        </div>
+
+    <script>
+        function fetchAttendance() {
+            fetch('/api/get_attendance')
+                .then(response => response.json())
+                .then(data => {
+                    const attendanceGrid = document.getElementById('attendance-grid');
+                    attendanceGrid.innerHTML = ''; // Clear existing cards
+                    data.forEach(record => {
+                        const studentCard = document.createElement('div');
+                        studentCard.className = 'student-card';
+                        studentCard.innerHTML = `
+                            <img src="${record.ImagePath}" alt="${record.Name}">
+                            <h3>${record.Name}</h3>
+                            <p><strong>Time:</strong> ${record.Time}</p>
+                            <p><strong>Date:</strong> ${record.Date}</p>
+                        `;
+                        attendanceGrid.appendChild(studentCard);
+                    });
+                })
+                .catch(error => console.error('Error fetching attendance:', error));
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchAttendance);
+        setInterval(fetchAttendance, 5000); // Refresh data every 5 seconds
+    </script>
+</body>
+</html>
